@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace NewtonTraining {
 
@@ -11,19 +12,6 @@ namespace NewtonTraining {
 	class Program {
 		static void Main(string[] args) {
 
-			var text = @"1. Implement a type Person. A Person has a gender, a name, and a date of birth. A name is a full name with first name and last name. 2. Person can be printed to Console in the format: <lastname>, <firstname> (<m/f>, <age>). Example: Shabinskiy, Anton (m, 29) 3. Implement extracting person data from texts. Assume that person always appears in text as Mr. John Smith was born on 2001/11/03 or Mrs. Jessica Brown was born on 1999/12/31 etc. You need to extract such data and get an array of Person objects. 4. Implement a special type of person - a US citizen. US citizens have a Social Security Number (SSN). 5. For an array of Person objects, implement a procedure to remove duplicates and a procedure to sort an array. Two persons are equal if they have the same gender, full name, and date of birth. For sorting, persons are sorted by gender first (female, male), then alphabetically by name, then by date of birth. NOTE: do not use LINQ, collections, and any framework methods for sorting etc. Use only plain arrays and implement your own logic. Also, use types wisely (classes, structs, enums etc) to make your implementation elegant and efficient. And finally put some duplicates here  Mr. John Smith was born on 2001/11/03 or Mrs. Jessica Brown was born on 1999/12/31 to check how it works.";
-
-			var parsers = new List<IParser<IParsee>>();
-			parsers.Add(new RegexPersonParser());
-			// parsers.Add(new AnyParser());
-			// parsers.Add(new AnotherCrazyParser());
-			// etc ...
-
-			var parsedEntities = parsers.SelectMany(p => p.Parse(text)).RemoveDuplicates().ToList();
-
-			Console.WriteLine(parsedEntities.Stringify());
-
-			Console.ReadKey();
 		}
 	}
 
@@ -118,7 +106,7 @@ namespace NewtonTraining {
 		}
 	}
 
-	public class Person : IParsee {
+	public class Person : IParsee, IXMLConvertable {
 
 		public Person(string firstName, string lastName, DateTime birthDate, GenderEnum gender) {
 			Name = new FullName() { FirstName = firstName, LastName = lastName };
@@ -148,6 +136,11 @@ namespace NewtonTraining {
 
 		public override string ToString() {
 			return $"{Name.LastName}, {Name.FirstName} ({Gender}, {Age})";
+		}
+
+		public override string ToXml()
+		{
+			return $"<Person><Gender value={Gender}/><Name><FirstName>Name.FirstName</FirstName><LastName>Name.LastName</LastName><BirthDate>birthDate</BirthDate><Person>";
 		}
 
 		public override int GetHashCode() {
@@ -257,4 +250,40 @@ namespace NewtonTraining {
 			return strBuilder.ToString();
 		}
 	}
+
+	public interface IXMLConvertable {}
+
+	public interface IXMLConverter
+	{
+		string ConvertToXml(IXMLConvertable convertable);
+		bool WriteToXml(List<IXMLConvertable> objects, string path);
+	}
+
+	public static class PersonCoverter : IXMLConverter
+	{
+		public static override bool WriteToXml(List<Person> objects, string path)
+		{
+			Directory.CreateDirectory(path + "/Person");
+			foreach (Person person in objects)
+			{}
+
+
+		}
+	}
+
+
+	/*public class ObjectsToXMLConverter
+	{
+		private List<IXMLConverter> ParsableObjects;
+
+		public ObjectsToXMLConverter(List<IXMLParseble> objects)
+		{
+			this.ParsableObjects = objects;
+		}
+
+		public void WriteToXml()
+		{
+		}
+	}*/
+		
 }
