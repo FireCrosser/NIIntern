@@ -138,11 +138,6 @@ namespace NewtonTraining {
 			return $"{Name.LastName}, {Name.FirstName} ({Gender}, {Age})";
 		}
 
-		public override string ToXml()
-		{
-			return $"<Person><Gender value={Gender}/><Name><FirstName>Name.FirstName</FirstName><LastName>Name.LastName</LastName><BirthDate>birthDate</BirthDate><Person>";
-		}
-
 		public override int GetHashCode() {
 			return Tuple.Create(Name, BirthDate, Gender).GetHashCode();
 		}
@@ -253,19 +248,26 @@ namespace NewtonTraining {
 
 	public interface IXMLConvertable {}
 
-	public interface IXMLConverter
+	public interface IXMLConverter<T> where T : IXMLConvertable
 	{
-		string ConvertToXml(IXMLConvertable convertable);
-		bool WriteToXml(List<IXMLConvertable> objects, string path);
+		string ConvertToXml(T convertable);
+		bool WriteToXml(List<T> objects, string path);
 	}
 
-	public static class PersonCoverter : IXMLConverter
+	public class PersonCoverter : IXMLConverter<Person>
 	{
-		public static override bool WriteToXml(List<Person> objects, string path)
+			//return $"<Person><Gender value={Gender}/><Name><FirstName>Name.FirstName</FirstName><LastName>Name.LastName</LastName><BirthDate>birthDate</BirthDate><Person>";
+		public string ConvertToXml(Person person)
+		{
+			return "<Person>/n/t<Gender value=" + person.Gender + "/></Person>";
+		}
+
+		public bool WriteToXml(List<Person> objects, string path)
 		{
 			Directory.CreateDirectory(path + "/Person");
 			foreach (Person person in objects)
 			{}
+			return false;
 
 
 		}
