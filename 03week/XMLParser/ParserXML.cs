@@ -11,6 +11,11 @@ namespace NewtonTraining {
 
 	class Program {
 		static void Main(string[] args) {
+			IXMLConverter<Person> conv = new PersonConverter();
+			List<Person> persons = new List<Person>();
+			persons.Add(new Person("John", "Smith", Convert.ToDateTime("01/08/2008"), GenderEnum.Male));
+			conv.WriteToXml(persons, System.IO.Directory.GetCurrentDirectory());
+			
 
 		}
 	}
@@ -254,19 +259,23 @@ namespace NewtonTraining {
 		bool WriteToXml(List<T> objects, string path);
 	}
 
-	public class PersonCoverter : IXMLConverter<Person>
+	public class PersonConverter : IXMLConverter<Person>
 	{
 			//return $"<Person><Gender value={Gender}/><Name><FirstName>Name.FirstName</FirstName><LastName>Name.LastName</LastName><BirthDate>birthDate</BirthDate><Person>";
 		public string ConvertToXml(Person person)
 		{
-			return "<Person>/n/t<Gender value=" + person.Gender + "/></Person>";
+			return "<Person>\n\t<Gender value=" + '"' + person.Gender + '"' + "/>\n\t<Name>\n\t\t<FirstName>"+ person.Name.FirstName + "</FirstName>\n\t\t<LastName>" + person.Name.LastName + "</LastName>\n\t</Name>\n\t<BirthDate value=" + '"' + person.BirthDate + '"' + "</BirthDate>\n</Person>";
 		}
 
 		public bool WriteToXml(List<Person> objects, string path)
 		{
 			Directory.CreateDirectory(path + "/Person");
+			int i = 0;
 			foreach (Person person in objects)
-			{}
+			{
+				System.IO.File.WriteAllText(path + "/Person" + "/Person" + i + ".txt", ConvertToXml(person));
+				++i;
+			}
 			return false;
 
 
